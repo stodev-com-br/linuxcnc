@@ -10,7 +10,6 @@
   <object class="GtkAdjustment" id="arc-restart-delay-adj"/>
   <object class="GtkAdjustment" id="arc-voltage-offset-adj"/>
   <object class="GtkAdjustment" id="arc-voltage-scale-adj"/>
-  <object class="GtkAdjustment" id="centre-spot-time-adj"/>
   <object class="GtkAdjustment" id="cornerlock-threshold-adj"/>
   <object class="GtkAdjustment" id="float-switch-travel-adj"/>
   <object class="GtkAdjustment" id="height-per-volt-adj"/>
@@ -24,12 +23,13 @@
   <object class="GtkAdjustment" id="probe-start-height-adj"/>
   <object class="GtkAdjustment" id="safe-height-adj"/>
   <object class="GtkAdjustment" id="scribe-arm-delay-adj"/>
-  <object class="GtkAdjustment" id="scribe-start-delay-adj"/>
+  <object class="GtkAdjustment" id="scribe-on-delay-adj"/>
   <object class="GtkAdjustment" id="setup-feed-rate-adj"/>
   <object class="GtkAdjustment" id="skip-ihs-distance-adj"/>
+  <object class="GtkAdjustment" id="spotting-threshold-adj"/>
+  <object class="GtkAdjustment" id="spotting-time-adj"/>
   <object class="GtkAdjustment" id="thc-delay-adj"/>
   <object class="GtkAdjustment" id="thc-threshold-adj"/>
-  <object class="GtkAdjustment" id="torch-off-delay-adj"/>
   <object class="GtkWindow" id="window1">
     <property name="can_focus">False</property>
     <child>
@@ -70,7 +70,6 @@
                             <property name="row_spacing">2</property>
                             <child>
                               <object class="GtkLabel" id="labelC000010">
-                                <property name="width_request">127</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
@@ -136,9 +135,13 @@ if THC off then skip IHS if start of this cut is less than this distance from st
                                 <property name="adjustment">float-switch-travel-adj</property>
                                 <property name="wrap">True</property>
                               </object>
+                              <packing>
+                                <property name="x_options"/>
+                              </packing>
                             </child>
                             <child>
                               <object class="HAL_SpinButton" id="probe-feed-rate">
+                                <property name="width_request">75</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
@@ -155,10 +158,12 @@ if THC off then skip IHS if start of this cut is less than this distance from st
                               <packing>
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
                               <object class="HAL_SpinButton" id="skip-ihs-distance">
+                                <property name="width_request">75</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
@@ -177,10 +182,12 @@ if THC off then skip IHS if start of this cut is less than this distance from st
                               <packing>
                                 <property name="top_attach">5</property>
                                 <property name="bottom_attach">6</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
                               <object class="HAL_SpinButton" id="probe-start-height">
+                                <property name="width_request">75</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
@@ -198,6 +205,7 @@ Note: this is the height above minimum limit</property>
                               <packing>
                                 <property name="top_attach">2</property>
                                 <property name="bottom_attach">3</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
@@ -220,6 +228,7 @@ Note: this is the height above minimum limit</property>
                             </child>
                             <child>
                               <object class="HAL_SpinButton" id="ohmic-max-attempts">
+                                <property name="width_request">75</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
@@ -236,6 +245,7 @@ Note: this is the height above minimum limit</property>
                               <packing>
                                 <property name="top_attach">4</property>
                                 <property name="bottom_attach">5</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
@@ -258,7 +268,6 @@ Note: this is the height above minimum limit</property>
                             </child>
                             <child>
                               <object class="GtkLabel" id="labelC4">
-                                <property name="width_request">127</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
@@ -293,6 +302,7 @@ Note: this is the height above minimum limit</property>
                               <packing>
                                 <property name="top_attach">3</property>
                                 <property name="bottom_attach">4</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                           </object>
@@ -357,14 +367,13 @@ Note: this is the height above minimum limit</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="thc-threshold-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -409,14 +418,13 @@ for mode 3 this is the percentage of max velocity used for THC</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="pid-p-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -463,14 +471,13 @@ for mode 3 this is the percentage of max velocity used for THC</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="thc-delay-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -511,14 +518,13 @@ for mode 3 this is the percentage of max velocity used for THC</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="pid-i-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -561,14 +567,13 @@ for mode 3 this is the percentage of max velocity used for THC</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="pid-d-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -613,14 +618,13 @@ for mode 3 this is the percentage of max velocity used for THC</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="labelR50000010">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -665,14 +669,13 @@ for mode 3 this is the percentage of max velocity used for THC</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="kerfcross-override-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -834,10 +837,12 @@ if set to 0 then Z axis maximum height will be used</property>
                                 <property name="adjustment">safe-height-adj</property>
                                 <property name="wrap">True</property>
                               </object>
+                              <packing>
+                                <property name="x_options"/>
+                              </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="labelC000000">
-                                <property name="width_request">128</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
@@ -885,7 +890,7 @@ this may be reduced due to THC movement</property>
                           <object class="GtkTable" id="table6">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="n_rows">9</property>
+                            <property name="n_rows">8</property>
                             <property name="n_columns">2</property>
                             <property name="column_spacing">2</property>
                             <property name="row_spacing">2</property>
@@ -895,7 +900,7 @@ this may be reduced due to THC movement</property>
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="HAL_SpinButton" id="arc-voltage-scale">
-                                    <property name="width_request">75</property>
+                                    <property name="width_request">90</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
@@ -910,14 +915,13 @@ this may be reduced due to THC movement</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="arc-voltage-scale-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -935,8 +939,8 @@ this may be reduced due to THC movement</property>
                               </object>
                               <packing>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">4</property>
-                                <property name="bottom_attach">5</property>
+                                <property name="top_attach">3</property>
+                                <property name="bottom_attach">4</property>
                               </packing>
                             </child>
                             <child>
@@ -945,7 +949,7 @@ this may be reduced due to THC movement</property>
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="HAL_SpinButton" id="arc-voltage-offset">
-                                    <property name="width_request">75</property>
+                                    <property name="width_request">90</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
@@ -960,14 +964,13 @@ this may be reduced due to THC movement</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="arc-voltage-offset-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -985,8 +988,8 @@ this may be reduced due to THC movement</property>
                               </object>
                               <packing>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">5</property>
-                                <property name="bottom_attach">6</property>
+                                <property name="top_attach">4</property>
+                                <property name="bottom_attach">5</property>
                               </packing>
                             </child>
                             <child>
@@ -995,7 +998,7 @@ this may be reduced due to THC movement</property>
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="HAL_SpinButton" id="arc-ok-high">
-                                    <property name="width_request">75</property>
+                                    <property name="width_request">90</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
@@ -1010,14 +1013,13 @@ this may be reduced due to THC movement</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="arc-ok-high-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -1035,8 +1037,8 @@ this may be reduced due to THC movement</property>
                               </object>
                               <packing>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">7</property>
-                                <property name="bottom_attach">8</property>
+                                <property name="top_attach">6</property>
+                                <property name="bottom_attach">7</property>
                               </packing>
                             </child>
                             <child>
@@ -1045,7 +1047,7 @@ this may be reduced due to THC movement</property>
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="HAL_SpinButton" id="arc-ok-low">
-                                    <property name="width_request">75</property>
+                                    <property name="width_request">90</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
@@ -1060,14 +1062,13 @@ this may be reduced due to THC movement</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="arc-ok-low-label">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -1085,13 +1086,12 @@ this may be reduced due to THC movement</property>
                               </object>
                               <packing>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">8</property>
-                                <property name="bottom_attach">9</property>
+                                <property name="top_attach">7</property>
+                                <property name="bottom_attach">8</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="labelC100000">
-                                <property name="width_request">128</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
@@ -1140,25 +1140,8 @@ this may be reduced due to THC movement</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelC100030">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">arc off delay in seconds</property>
-                                <property name="xalign">0</property>
-                                <property name="xpad">2</property>
-                                <property name="label" translatable="yes">Off Delay </property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">3</property>
-                                <property name="bottom_attach">4</property>
-                              </packing>
-                            </child>
-                            <child>
                               <object class="HAL_SpinButton" id="arc-fail-delay">
-                                <property name="width_request">75</property>
+                                <property name="width_request">90</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
@@ -1172,9 +1155,13 @@ this may be reduced due to THC movement</property>
                                 <property name="adjustment">arc-fail-delay-adj</property>
                                 <property name="wrap">True</property>
                               </object>
+                              <packing>
+                                <property name="x_options"/>
+                              </packing>
                             </child>
                             <child>
                               <object class="HAL_SpinButton" id="arc-max-starts">
+                                <property name="width_request">90</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
@@ -1191,10 +1178,12 @@ this may be reduced due to THC movement</property>
                               <packing>
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
                               <object class="HAL_SpinButton" id="arc-restart-delay">
+                                <property name="width_request">90</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
@@ -1211,26 +1200,7 @@ this may be reduced due to THC movement</property>
                               <packing>
                                 <property name="top_attach">2</property>
                                 <property name="bottom_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="HAL_SpinButton" id="torch-off-delay">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">arc off delay in seconds</property>
-                                <property name="invisible_char">●</property>
-                                <property name="xalign">1</property>
-                                <property name="primary_icon_activatable">False</property>
-                                <property name="secondary_icon_activatable">False</property>
-                                <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
-                                <property name="adjustment">torch-off-delay-adj</property>
-                                <property name="wrap">True</property>
-                              </object>
-                              <packing>
-                                <property name="top_attach">3</property>
-                                <property name="bottom_attach">4</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
@@ -1239,7 +1209,7 @@ this may be reduced due to THC movement</property>
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="HAL_SpinButton" id="height-per-volt">
-                                    <property name="width_request">75</property>
+                                    <property name="width_request">90</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="has_tooltip">True</property>
@@ -1254,14 +1224,13 @@ this may be reduced due to THC movement</property>
                                     <property name="wrap">True</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="arc-ok-low-label1">
-                                    <property name="width_request">128</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="has_tooltip">True</property>
@@ -1279,8 +1248,8 @@ this may be reduced due to THC movement</property>
                               </object>
                               <packing>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">6</property>
-                                <property name="bottom_attach">7</property>
+                                <property name="top_attach">5</property>
+                                <property name="bottom_attach">6</property>
                               </packing>
                             </child>
                           </object>
@@ -1324,7 +1293,6 @@ this may be reduced due to THC movement</property>
                             <property name="row_spacing">2</property>
                             <child>
                               <object class="GtkLabel" id="labelC200000">
-                                <property name="width_request">128</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="tooltip_text" translatable="yes">maximum allowed offset feed rate in machine units per minute</property>
@@ -1340,7 +1308,7 @@ this may be reduced due to THC movement</property>
                             </child>
                             <child>
                               <object class="GtkLabel" id="max-offset-velocity-in">
-                                <property name="width_request">65</property>
+                                <property name="width_request">55</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
@@ -1348,10 +1316,12 @@ this may be reduced due to THC movement</property>
                                 <property name="xalign">1</property>
                                 <property name="label" translatable="yes">0</property>
                               </object>
+                              <packing>
+                                <property name="x_options"/>
+                              </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="labelC200010">
-                                <property name="width_request">128</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
@@ -1398,11 +1368,12 @@ this also sets the maximum probe feed rate</property>
                                 <property name="right_attach">2</property>
                                 <property name="top_attach">1</property>
                                 <property name="bottom_attach">2</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="label4">
-                                <property name="width_request">18</property>
+                                <property name="width_request">20</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                               </object>
@@ -1450,11 +1421,11 @@ this also sets the maximum probe feed rate</property>
                             <property name="row_spacing">2</property>
                             <child>
                               <object class="HAL_SpinButton" id="scribe-arm-delay">
-                                <property name="width_request">54</property>
+                                <property name="width_request">60</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">time to allow air-scribe to reach surface of material before start of scribing</property>
+                                <property name="tooltip_text" translatable="yes">time to allow scribe to reach surface of material before start of scribing</property>
                                 <property name="invisible_char">●</property>
                                 <property name="xalign">1</property>
                                 <property name="primary_icon_activatable">False</property>
@@ -1469,19 +1440,19 @@ this also sets the maximum probe feed rate</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="HAL_SpinButton" id="scribe-start-delay">
-                                <property name="width_request">54</property>
+                              <object class="HAL_SpinButton" id="scribe-on-delay">
+                                <property name="width_request">60</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">time to allow air-scribe to start before motion begins</property>
+                                <property name="tooltip_text" translatable="yes">time to allow scribe to start before motion begins</property>
                                 <property name="invisible_char">●</property>
                                 <property name="xalign">1</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
                                 <property name="secondary_icon_sensitive">True</property>
-                                <property name="adjustment">scribe-start-delay-adj</property>
+                                <property name="adjustment">scribe-on-delay-adj</property>
                                 <property name="wrap">True</property>
                               </object>
                               <packing>
@@ -1495,10 +1466,10 @@ this also sets the maximum probe feed rate</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">time to allow air-scribe to start before motion begins</property>
+                                <property name="tooltip_text" translatable="yes">time to allow scribe to start before motion begins</property>
                                 <property name="xalign">1</property>
                                 <property name="xpad">2</property>
-                                <property name="label" translatable="yes">Start Delay</property>
+                                <property name="label" translatable="yes">On Delay</property>
                               </object>
                               <packing>
                                 <property name="left_attach">2</property>
@@ -1510,7 +1481,7 @@ this also sets the maximum probe feed rate</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">time to allow air-scribe to reach surface of material before start of scribing</property>
+                                <property name="tooltip_text" translatable="yes">time to allow scribe to reach surface of material before start of scribing</property>
                                 <property name="xalign">0</property>
                                 <property name="xpad">2</property>
                                 <property name="label" translatable="yes">Arm Delay</property>
@@ -1528,7 +1499,7 @@ this also sets the maximum probe feed rate</property>
                       <object class="GtkLabel" id="labelC7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Air Scribe&lt;/b&gt;</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Scribe&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
                     </child>
@@ -1557,37 +1528,25 @@ this also sets the maximum probe feed rate</property>
                             <property name="column_spacing">2</property>
                             <property name="row_spacing">2</property>
                             <child>
-                              <object class="HAL_SpinButton" id="centre-spot-time">
+                              <object class="HAL_SpinButton" id="spotting-time">
                                 <property name="width_request">60</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">torch on time for centre spot tool (mS)</property>
+                                <property name="tooltip_text" translatable="yes">delay time after threshold voltage reached to turn torch off (mS)</property>
                                 <property name="invisible_char">●</property>
                                 <property name="xalign">1</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">False</property>
                                 <property name="primary_icon_sensitive">True</property>
                                 <property name="secondary_icon_sensitive">True</property>
-                                <property name="adjustment">centre-spot-time-adj</property>
+                                <property name="adjustment">spotting-time-adj</property>
                                 <property name="wrap">True</property>
                               </object>
                               <packing>
-                                <property name="x_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="labelC8">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">time to allow air-scribe to start before motion begins</property>
-                                <property name="xalign">1</property>
-                                <property name="xpad">2</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">2</property>
+                                <property name="left_attach">3</property>
                                 <property name="right_attach">4</property>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                             <child>
@@ -1595,14 +1554,51 @@ this also sets the maximum probe feed rate</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="has_tooltip">True</property>
-                                <property name="tooltip_text" translatable="yes">torch on time for centre spot tool (mS)</property>
+                                <property name="tooltip_text" translatable="yes">delay time after threshold voltage reached to turn torch off (mS)</property>
+                                <property name="xalign">1</property>
+                                <property name="xpad">2</property>
+                                <property name="label" translatable="yes">Delay (mS)</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="right_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="labelC8">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_text" translatable="yes">arc voltage level to start torch off timer for spotting
+0 = start timer when torch started</property>
                                 <property name="xalign">0</property>
                                 <property name="xpad">2</property>
-                                <property name="label" translatable="yes">Torch On Time (mS)</property>
+                                <property name="label" translatable="yes">Threshold (V)</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="HAL_SpinButton" id="spotting-threshold">
+                                <property name="width_request">60</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_text" translatable="yes">arc voltage level to start torch off timer for spotting
+0 = start timer when torch started</property>
+                                <property name="invisible_char">●</property>
+                                <property name="xalign">1</property>
+                                <property name="primary_icon_activatable">False</property>
+                                <property name="secondary_icon_activatable">False</property>
+                                <property name="primary_icon_sensitive">True</property>
+                                <property name="secondary_icon_sensitive">True</property>
+                                <property name="adjustment">spotting-threshold-adj</property>
+                                <property name="wrap">True</property>
+                              </object>
+                              <packing>
+                                <property name="x_options"/>
                               </packing>
                             </child>
                           </object>
@@ -1613,7 +1609,7 @@ this also sets the maximum probe feed rate</property>
                       <object class="GtkLabel" id="labelC10">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Centre Spot&lt;/b&gt;</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Spotting&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
                     </child>
