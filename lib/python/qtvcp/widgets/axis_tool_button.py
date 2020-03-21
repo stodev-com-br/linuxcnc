@@ -97,7 +97,10 @@ class AxisToolButton(QToolButton, _HalWidgetBase):
         axis, now = self._a_from_j(self._axis)
         if axis:
             mess = {'NAME':self.dialog_code,'ID':'%s__' % self.objectName(),
-            'AXIS':axis,'CURRENT':now,'TITLE':'Set %s Origin'% axis}
+            'AXIS':axis,'CURRENT':now,
+            'TITLE':'Set %s Origin'% axis,
+            'GEONAME':'axisToolButtonDialog_{}'.format(self.dialog_code),
+            'AXIS':self._axis}
             STATUS.emit('dialog-request', mess)
             LOG.debug('message sent:{}'.format (mess))
 
@@ -162,6 +165,16 @@ class AxisToolButton(QToolButton, _HalWidgetBase):
                 STATUS.selected_joint = self._joint
                 if self._halpin_option:
                     self.hal_pin_axis.set(self.isChecked())
+        else:
+            if STATUS.is_joint_mode():
+                ACTION.SET_SELECTED_JOINT(-1)
+            else:
+                ACTION.SET_SELECTED_AXIS('None')
+                # set this whithout causing a STATUS message output
+                # in case we are selecting an axis to un/home
+                STATUS.selected_joint = -1
+            if self._halpin_option:
+                self.hal_pin_axis.set(False)
 
     def ChangeState(self, joint = None, axis = None):
         if STATUS.is_joint_mode():

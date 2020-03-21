@@ -29,6 +29,8 @@ KEYBIND = Keylookup()
 STATUS = Status()
 ACTION = Action()
 INFO = Info()
+TOOLBAR = ToolBarActions()
+STYLEEDITOR  = SSE()
 ###################################
 # **** HANDLER CLASS SECTION **** #
 ###################################
@@ -44,9 +46,7 @@ class HandlerClass:
         self.hal = halcomp
         self.w = widgets
         self.PATHS = paths
-        self.STYLEEDITOR = SSE(widgets,paths)
-        global TOOLBAR
-        TOOLBAR = ToolBarActions(widgets)
+
         STATUS.connect('general',self.return_value)
         STATUS.connect('motion-mode-changed',self.motion_mode)
         STATUS.connect('user-system-changed', self._set_user_system_text)
@@ -55,6 +55,9 @@ class HandlerClass:
     ##########################################
     # Special Functions called from QTSCREEN
     ##########################################
+
+    def class_patch__(self):
+        GCODE.exitCall = self.editor_exit
 
     # at this point:
     # the widgets are instantiated.
@@ -107,6 +110,7 @@ class HandlerClass:
         TOOLBAR.configure_action(self.w.actionTopView, 'view_z')
         TOOLBAR.configure_action(self.w.actionPerspectiveView, 'view_p')
         TOOLBAR.configure_action(self.w.actionClearPlot, 'view_clear')
+        TOOLBAR.configure_action(self.w.actionShowOffsets, 'show_offsets')
         TOOLBAR.configure_action(self.w.actionQuit, 'Quit', lambda d:self.w.close())
         TOOLBAR.configure_action(self.w.actionShutdown, 'system_shutdown')
         TOOLBAR.configure_action(self.w.actionProperties, 'gcode_properties')
@@ -122,6 +126,7 @@ class HandlerClass:
         TOOLBAR.configure_action(self.w.actionRunFromLine, 'runfromline')
         TOOLBAR.configure_action(self.w.actionToolOffsetDialog, 'tooloffsetdialog')
         TOOLBAR.configure_action(self.w.actionOriginOffsetDialog, 'originoffsetdialog')
+        TOOLBAR.configure_action(self.w.actionCalculatorDialog, 'calculatordialog')
         self.w.actionQuickRef.triggered.connect(self.quick_reference)
         self.w.actionMachineLog.triggered.connect(self.launch_log_dialog)
         if not INFO.HOME_ALL_FLAG:
@@ -150,15 +155,14 @@ class HandlerClass:
                     flag = True
                     break
                 if isinstance(receiver2, GCODE):
-                    flag = False
+                    flag = True
                     break
                 receiver2 = receiver2.parent()
-
             if flag:
                 if isinstance(receiver2, GCODE):
-                    # if in manual do our keybindings - otherwise
-                    # send events to gcode widget
-                    if STATUS.is_man_mode() == False:
+                    # send events to gcode widget if in edit mode
+                    # else do our keybindings
+                    if self.w.actionEdit.isChecked() == True:
                         if is_pressed:
                             receiver.keyPressEvent(event)
                             event.accept()
@@ -173,7 +177,9 @@ class HandlerClass:
 
         # ok if we got here then try keybindings
         try:
-            return KEYBIND.call(self,event,is_pressed,shift,cntrl)
+            b = KEYBIND.call(self,event,is_pressed,shift,cntrl)
+            event.accept()
+            return True
         except NameError as e:
             LOG.debug('Exception in KEYBINDING: {}'.format (e))
         except Exception as e:
@@ -190,15 +196,15 @@ class HandlerClass:
 
     # process the STATUS return message from set-tool-offset
     def return_value(self, w, message):
-        num = message['RETURN']
-        code = bool(message['ID'] == 'FORM__')
-        name = bool(message['NAME'] == 'ENTRY')
+        num = message.get('RETURN')
+        code = bool(message.get('ID') == 'FORM__')
+        name = bool(message.get('NAME') == 'ENTRY')
         if num is not None and code and name:
             LOG.debug('message return:{}'.format (message))
             axis = message['AXIS']
             fixture = message['FIXTURE']
             ACTION.SET_TOOL_OFFSET(axis,num,fixture)
-            STATUS.emit('update-machine-log', 'Set tool offset of Axis %s to %f' %(axis, num), 'TIME')
+            ACTION.UPDATE_MACHINE_LOG('Set tool offset of Axis %s to %f' %(axis, num), 'TIME')
 
     def motion_mode(self, w, mode):
         #print STATUS.stat.joints
@@ -273,11 +279,22 @@ class HandlerClass:
         self.w.dro_label_g5x_r.update_units()
         self.w.dro_label_g5x_r.update_rotation(None, STATUS.stat.rotation_xy)
 
+    def editor_exit(self):
+        self.w.gcode_editor.exit()
+        self.w.actionEdit.setChecked(False)
+        self.edit(None,False)
+
     def edit(self, widget, state):
         if state:
             self.w.gcode_editor.editMode()
+            self.w.gcode_editor.setMaximumHeight(1000)
+            self.w.frame.hide()
+            self.w.rightTab.hide()
         else:
             self.w.gcode_editor.readOnlyMode()
+            self.w.gcode_editor.setMaximumHeight(500)
+            self.w.frame.show()
+            self.w.rightTab.show()
 
     def quick_reference(self):
         help1 = [
@@ -382,7 +399,7 @@ class HandlerClass:
         retval = msg.exec_()
 
     def launch_log_dialog(self):
-        STATUS.emit('dialog-request',{'NAME':'MACHINELOG', 'ID':'_qtaxis_handler_'})
+        ACTION.CALL_DIALOG({'NAME':'MACHINELOG', 'ID':'_qtaxis_handler_'})
 
     # keyboard jogging from key binding calls
     # double the rate if fast is true 
@@ -455,7 +472,7 @@ class HandlerClass:
 
     def on_keycall_F12(self,event,state,shift,cntrl):
         if state:
-            self.STYLEEDITOR.load_dialog()
+            STYLEEDITOR .load_dialog()
 
     def on_keycall_feedoverride(self,event,state,shift,cntrl,value):
         if state:

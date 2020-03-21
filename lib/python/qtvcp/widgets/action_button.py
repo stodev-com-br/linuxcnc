@@ -140,7 +140,8 @@ class ActionButton(Indicated_PushButton, _HalWidgetBase):
         def _safecheck(state, data=None):
             self._block_signal = True
             self.setChecked(state)
-            if self._HAL_pin is False:
+            # update indicator if halpin or status doesn't
+            if self._HAL_pin is False and self._ind_status is False:
                 self.indicator_update(state)
             # if using state labels option update the labels
             if self._state_text:
@@ -476,8 +477,9 @@ class ActionButton(Indicated_PushButton, _HalWidgetBase):
                  STATUS.emit('reload-display')
             else:
                 try:
-                    STATUS.emit('graphics-view-changed', '%s' % self.view_type)
-                except:
+                    ACTION.SET_GRAPHICS_VIEW(self.view_type)
+                except Exception as e:
+                    print e
                     pass
         elif self.spindle_fwd:
             ACTION.SET_SPINDLE_ROTATION(linuxcnc.SPINDLE_FORWARD, INFO.DEFAULT_SPINDLE_SPEED)

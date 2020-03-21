@@ -28,6 +28,7 @@ LOG = logger.getLogger(__name__)
 KEYBIND = Keylookup()
 STATUS = Status()
 ACTION = Action()
+STYLEEDITOR = SSE()
 
 LOG = logger.getLogger(__name__)
 # Set the log level for this module
@@ -49,7 +50,6 @@ class HandlerClass:
         self.w = widgets
         self.PATH = paths
         self._big_view = -1
-        self.STYLEEDITOR = SSE(widgets,paths)
 
     ##########################################
     # Special Functions called from QTVCP
@@ -139,6 +139,11 @@ class HandlerClass:
     #######################
     def widget_switch(self,data):
         self.w.widgetswitcher.show_next()
+        state = False
+        if self.w.widgetswitcher.get_current_number() == 1:
+            state = True
+        self.w.Graphics.setdro(state)
+        self.w.Graphics.setoverlay(state)
 
     def set_edit_mode(self, num):
         if num == 2:
@@ -219,7 +224,7 @@ class HandlerClass:
             STATUS.emit('dialog-request',{'NAME':'MACHINELOG','NONBLOCKING':True})
     def on_keycall_F12(self,event,state,shift,cntrl):
         if state:
-            self.STYLEEDITOR.load_dialog()
+            STYLEEDITOR.load_dialog()
 
 
     # Linear Jogging

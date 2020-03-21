@@ -13,7 +13,7 @@ PlasmaC and all its related software is released under GPLv2.
 
 PlasmaC is a LinuxCNC configuration for plasma cutting incorporating the PlasmaC HAL component with GUI configurations for both <<cha:axis-gui, Axis>> and <<cha:gmoccapy,Gmoccapy>>. It should run on any hardware that is supported on LinuxCNC provide there are enough I/O pins.
 
-If you are new user, it may be worthwhile having a read through the <<cha:plasma-primer, Plasma CNC Primer>> document which is a generic introduction to CNC plasma cutting.
+If you are new user, it may be worthwhile having a read through the link:plasma-cnc-primer.html[Plasma CNC Primer] document which is a generic introduction to CNC plasma cutting.
 
 PlasmaC uses one of three different operating modes.
 
@@ -124,6 +124,16 @@ To use the buildbot packages on your computer, first add the buildbot archive si
 sudo apt-key adv --keyserver hkp://keys.gnupg.net --recv-key E0EE663E
 ----
 
+If you get an error like GPG: keyserver receive failed: No dirmngr
+
+Then enter the following in the terminal:
+
+----
+sudo apt-get install dirmngr
+----
+
+The missing dirmngr package will then be installed.
+
 If you get an error downloading the key it may be caused by being behind a firewall or a proxy server. In this case it may be worthwhile specifying port 80 rather than using the default of 11371:
 
 ----
@@ -136,7 +146,7 @@ Select Search in the menu bar and do a search using 'linuxcnc' as the search ter
 
 Click Settings from the menu and select Repositories.
 
-You can then either edit or delete existing LinuxCNC entries from the repositories list. You need to end up with the following set of stanzas as the only references to LinuxCNC:
+You can then either edit or delete existing LinuxCNC entries from the repositories list. You need to end up with the following set of stanzas as the only enabled references to LinuxCNC:
 
 ----
 deb     http://buildbot.linuxcnc.org/ <distro> <branch>-<rt_type>
@@ -174,7 +184,7 @@ Go to <<sec:testing-linuxcnc, testing the linuxCNC installation>>
 
 ==== Run In Place Installation
 
-For more information on a Run In Place installation, see http://linuxcnc.org/docs/master/html/code/building-linuxcnc.html[Building LinuxCNC]
+For more information on a Run In Place installation, see link:../code/building-linuxcnc.html[Building LinuxCNC]
 
 CAUTION: Ensure you are *NOT* the root user +
 Do *NOT* use sudo except for the 'make setuid' step
@@ -205,7 +215,7 @@ You can then try to compile LinuxCNC.
 $ make
 ----
 
-If you get errors here have a look at http://linuxcnc.org/docs/devel/html/code/building-linuxcnc.html#Satisfying-Build-Dependencies[Satisfying Build Dependencies]
+If you get errors here have a look at link:../code/building-linuxcnc.html#Satisfying-Build-Dependencies[Satisfying Build Dependencies]
 
 If no errors:
 
@@ -374,12 +384,12 @@ This can be run as follows:
 
 * For a buildbot installation: +
 ----
-$ linuxcnc ~/linuxcnc/configs/<machine-name>.<machine-name>.ini
+$ linuxcnc ~/linuxcnc/configs/<machine-name>/<machine-name>.ini
 ----
 
 * For a run in place installation: +
 ----
-$ ~/linuxcnc-dev/scripts/linuxcnc ~/linuxcnc/configs/<machine-name>.<machine-name>.ini
+$ ~/linuxcnc-dev/scripts/linuxcnc ~/linuxcnc/configs/<machine-name>/<machine-name>.ini
 ----
 
 After creating a new configuration some initial setup is required.
@@ -2056,11 +2066,11 @@ The preferred jumper settings are, 'UNIPOLAR' and 'F/32'
 
 You will need to manually add a scale, filter and counter mode to your base machine .hal file before running the Configurator.
 
-If you connected your THCAD to a mesa 7i76e then the commands required in the .hal file would be:
+For example, if you connected your THCAD to a mesa 7i76e then the commands required in the .hal file would be:
 
 ----
 setp  hm2_7i76e.0.encoder.00.scale -1
-setp  hm2_7i96.0.encoder.00.filter        1
+setp  hm2_7i76e.0.encoder.00.filter 1
 setp  hm2_7i76e.0.encoder.00.counter-mode 1
 ----
 
@@ -2166,6 +2176,8 @@ NOTE: There is a <<lowpass, lowpass filter>> available which may be useful if us
 
 Communications can be established with a Hypertherm Powermax plasma cutter that has a RS485 port. This then enables the setting of 'Cut Mode', 'Cutting Amperage' and 'Gas Pressure' automatically from the 'Cut Parameters' of the material file.
 
+A typical <<rs485_connections, connection diagram>> is shown in the appendix of this document.
+
 If Gas Pressure is set to Zero then the Powermax will calculate the required pressure from the Cut Mode, Cut Current, torch type and torch length.
 
 The maximum and minimum values of these parameters are read from the plasma cutter and the related spin-buttons in the Cut Parameters are set with these values.
@@ -2210,3 +2222,7 @@ It should be noted that during the initial testing phase of this feature it was 
 == Support
 
 On line help and support are available from the https://forum.linuxcnc.org/plasmac[PlasmaC forum] section of the https://forum.linuxcnc.org/[LinuxCNC forum].
+
+== Appendix
+[[rs485_connections]]
+image::images/plasmac_rs485_connections.png[width=75%]

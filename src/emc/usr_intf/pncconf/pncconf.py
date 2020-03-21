@@ -940,7 +940,7 @@ PNCconf will use internal firmware data"%self._p.FIRMDIR),True)
             hifreq = int(text)/1000000
             modules = root.findall(".//modules")[0]
             if driver == None:
-                meta = self.get_board_meta(currentboard)
+                meta = self.get_board_meta(boardname)
                 driver = meta.get('DRIVER')
             for i,j in enumerate(modules):
                 k = modules[i].find("tagname").text
@@ -3827,7 +3827,9 @@ Clicking 'existing custom program' will aviod this warning. "),False):
         # always uses the value set here - if it is set to a default value
         # if should keep checking that the value is still right.
         # but thats a bigger change then we want now.
-        if not d[axis + "P"] == None:
+        # We check fo None and 'None' because when None is saved 
+        # it's saved as a string
+        if not d[axis + "P"] == None and not d[axis + "P"] == 'None':
             set_value("P")
         elif stepdriven == True:
             w[axis + "P"].set_value(1/(d.servoperiod/1000000000))
@@ -4019,7 +4021,7 @@ Clicking 'existing custom program' will aviod this warning. "),False):
             w[axis+"homesearchvel"].set_text("%d" % (d[axis+"homesearchvel"]*60))
             w[axis+"homelatchvel"].set_text("%d" % (d[axis+"homelatchvel"]*60))
             w[axis+"homefinalvel"].set_text("%d" % (d[axis+"homefinalvel"]*60))
-            w[axis+"homesequence"].set_text("%d" % d[axis+"homesequence"])
+            w[axis+"homesequence"].set_text("%d" % abs(d[axis+"homesequence"]))
             set_active("searchdir")
             set_active("latchdir")
             set_active("usehomeindex")
@@ -4206,7 +4208,7 @@ Clicking 'existing custom program' will aviod this warning. "),False):
             d[axis + "homesearchvel"] = (get_value(w[axis + "homesearchvel"])/60)
             d[axis + "homelatchvel"] = (get_value(w[axis + "homelatchvel"])/60)
             d[axis + "homefinalvel"] = (get_value(w[axis + "homefinalvel"])/60)
-            d[axis+"homesequence"] = (get_value(w[axis+"homesequence"]))
+            d[axis+"homesequence"] = (abs(get_value(w[axis+"homesequence"])))
             get_active("searchdir")
             get_active("latchdir")
             get_active("usehomeindex")
