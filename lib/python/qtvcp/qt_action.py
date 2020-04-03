@@ -66,9 +66,9 @@ class _Lcnc_Action(object):
                         ''''Home-all not available according to INI Joint Home sequence
              Press again to home next Joint''')
                     return
-                length = len(INFO.JOINTSEQUENCELIST)
-                for num,j in enumerate(INFO.JOINTSEQUENCELIST):
-                    print j, num, len(INFO.JOINTSEQUENCELIST)
+                length = len(INFO.JOINT_SEQUENCE_LIST)
+                for num,j in enumerate(INFO.JOINT_SEQUENCE_LIST):
+                    print j, num, len(INFO.JOINT_SEQUENCE_LIST)
                     # at the end so all homed
                     if num == length -1:
                         self.home_all_warning_flag = False
@@ -108,7 +108,8 @@ class _Lcnc_Action(object):
             STATUS.emit('error',linuxcnc.OPERATOR_ERROR,'Hard Limits Are Overridden!')
             self.cmd.override_limits()
         else:
-            STATUS.emit('error',linuxcnc.OPERATOR_TEXT,'Hard Limits Are Reset To Active!')
+            # make it temparary
+            STATUS.emit('error',255,'Hard Limits Are Reset To Active!')
             self.cmd.override_limits()
 
     def SET_MDI_MODE(self):
@@ -226,6 +227,8 @@ class _Lcnc_Action(object):
             outfile.close()
 
     def SET_AXIS_ORIGIN(self,axis,value):
+        if axis == '' or axis.upper() not in ("XYZABCUVW"):
+            log.warning("Couldn't set orgin -axis >{}< not recognized:".format(axis))
         m = "G10 L20 P0 %s%f"%(axis,value)
         fail, premode = self.ensure_mode(linuxcnc.MODE_MDI)
         self.cmd.mdi(m)
@@ -304,6 +307,7 @@ class _Lcnc_Action(object):
     def SET_SPINDLE_ROTATION(self, direction = 1, rpm = 100, number = 0):
         self.cmd.spindle(direction, rpm, number)
     def SET_SPINDLE_FASTER(self, number = 0):
+        if abs(STATUS.old['spindle-speed']) >= INFO.MAX_SPINDLE_SPEED: return
         self.cmd.spindle(linuxcnc.SPINDLE_INCREASE, number)
     def SET_SPINDLE_SLOWER(self, number = 0):
         self.cmd.spindle(linuxcnc.SPINDLE_DECREASE, number)
@@ -432,6 +436,9 @@ class _Lcnc_Action(object):
                 'overlay_dro_on','overlay_dro_off',
                 'overlay-offsets-on','overlay-offsets-off'):
             STATUS.emit('graphics-view-changed',view,None)
+
+    def SET_GRAPHICS_GRID_SIZE(self, size):
+            STATUS.emit('graphics-view-changed','GRID-SIZE',{'SIZE':size})
 
     def ADJUST_GRAPHICS_PAN(self, x, y):
         STATUS.emit('graphics-view-changed','pan-view',{'X':x,'Y':y})
