@@ -15,12 +15,14 @@
 # 
 ###############################################################################
 
+from __future__ import print_function
+
 import os
 import hashlib
 
 from qtvcp.core import Status, Info, Action
 # Set up logging
-import logger
+from . import logger
 
 STATUS = Status()
 INFO = Info()
@@ -80,7 +82,7 @@ class _TStat(object):
     def SAVE_TOOLFILE(self, array):
         return self._save(array)
 
-    def ADD_TOOL(self, newtool = [-99, 0,'0','0','0','0','0','0','0','0','0','0','0','0', 0,'New Tool']):
+    def ADD_TOOL(self, newtool = [-99, 0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0, 0,'New Tool']):
         info = self.GET_TOOL_MODELS()
         info[0].insert(0, newtool)
         return self._save(info[0]+info[1])
@@ -130,7 +132,7 @@ class _TStat(object):
                 line = rawline.rstrip(comment)
             else:
                 line = rawline
-            array = [0, 0,'0','0','0','0','0','0','0','0','0','0','0','0', 0,comment]
+            array = [0, 0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0, 0,comment]
             wear_flag = False
             # search beginning of each word for keyword letters
             # if i = ';' that is the comment and we have already added it
@@ -161,9 +163,9 @@ class _TStat(object):
                         else:
                             try:
                                 if float(word.lstrip(i)) < 0.000001:
-                                    array[offset]= ("0")
+                                    array[offset]= 0.0
                                 else:
-                                    array[offset]= ("%10.4f" % float(word.lstrip(i)))
+                                    array[offset]= float(word.lstrip(i))
                             except:
                                 LOG.error("toolfile float access: {}".format(self.toolfile))
                         break
@@ -176,7 +178,7 @@ class _TStat(object):
         if toolinfo_flag:
             self.toolinfo = temp
         else:
-            self.toolinfo = [0, 0,'0','0','0','0','0','0','0','0','0','0','0','0', 0,'No Tool']
+            self.toolinfo = [0, 0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0, 0,'No Tool']
         return (tool_model, wear_model)
 
     # converts from linuxcnc toolfile array to toolwear array
@@ -195,7 +197,7 @@ class _TStat(object):
         tool_num_list = {}
         full_tool_list = []
         for rnum, row in enumerate(maintool):
-            new_line = [False, 0, 0,'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0', 0,'No Tool']
+            new_line = [False, 0, 0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0, 0,'No Tool']
             valuesInRow = [ value for value in row ]
             for cnum,i in enumerate(valuesInRow):
                 if cnum == 0:
@@ -223,10 +225,15 @@ class _TStat(object):
         # eg 10001 goes to tool 1, 10002 goes to tool 2 etc
         for rnum, row in enumerate(weartool):
             values = [ value for value in row ]
-            parent_tool = tool_num_list[( values[0]-10000)]
-            full_tool_list[parent_tool][4] = values[2]
-            full_tool_list[parent_tool][6] = values[3]
-            full_tool_list[parent_tool][8] = values[4]
+            try:
+                parent_tool = tool_num_list[( values[0]-10000)]
+            except KeyError:
+                LOG.error("tool wear number has no parent Tool: {}".format(values))
+                continue
+            else:
+                full_tool_list[parent_tool][4] = values[2]
+                full_tool_list[parent_tool][6] = values[3]
+                full_tool_list[parent_tool][8] = values[4]
         return full_tool_list
 
     # converts from toolwear array to linuxcnc toolfile array
@@ -238,8 +245,8 @@ class _TStat(object):
         tool_wear_list = []           
         full_tool_list = []
         for rnum, row in enumerate(data):
-            new_line = [0, 0,'0','0','0','0','0','0','0','0','0','0','0','0', 0,'']
-            new_wear_line = [0, 0,'0','0','0','0','0','0','0','0','0','0','0','0', 0,'Wear Offset']
+            new_line = [0, 0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0, 0,'']
+            new_wear_line = [0, 0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0, 0,'Wear Offset']
             wear_flag = False
             values = [ value for value in row ]
             for cnum,i in enumerate(values):
@@ -269,7 +276,7 @@ class _TStat(object):
                     new_line[cnum-4] = str(i)
             if wear_flag:
                 new_wear_line[0] = int(values[1]+10000)
-                new_wear_line[15] = 'Wear Offset Tool %d'% values[1]
+                new_wear_line[15] = 'Wear Offset %d'% values[1]
                 tool_wear_list.append(new_wear_line)
             # add tool line to tool list
             full_tool_list.append(new_line)
@@ -299,11 +306,16 @@ class _TStat(object):
                     test = i.strip()
                     line = line + "%s%s "%(KEYWORDS[num],test)
                 else:
-                    test = str(i).lstrip()  # floats
-                    line = line + "%s%s "%(KEYWORDS[num], test)
+                    test = float(str(i).lstrip())  # floats
+                    if test == 0.0:
+                        line = line + "%s%d "%(KEYWORDS[num], test)
+                    elif num in(12,13):
+                        line = line + "%s%3.1f "%(KEYWORDS[num], test)
+                    else:
+                        line = line + "%s%.5f "%(KEYWORDS[num], test)
             LOG.debug("Save line: {}".format(line))
             if not skip:
-                print >>file,line
+                print(line, file=file)
         # Theses lines are required to make sure the OS doesn't cache the data
         # That would make linuxcnc and the widget to be out of synch leading to odd errors
         file.flush()

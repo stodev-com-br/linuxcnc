@@ -1,12 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+
 import os
 import sys
 import shutil
 import traceback
 import hal
 import signal
+
 from optparse import Option, OptionParser
 from PyQt5 import QtWidgets, QtCore
+
 from qtvcp.core import Status, Info, QComponent, Path
 from qtvcp.lib import xembed
 
@@ -16,6 +19,16 @@ from qtvcp.lib import xembed
 from qtvcp import logger
 LOG = logger.initBaseLogger('QTvcp', log_file=None, log_level=logger.DEBUG)
 
+try:
+    from PyQt5.QtWebEngineWidgets import QWebEngineView as QWebView
+except:
+    try:
+        from PyQt5.QtWebKitWidgets import QWebView
+    except:
+        if sys.version_info.major > 2:
+            LOG.error('Qtvcp Error with loading webView - is python3-pyqt5.qtwebengine installed?')
+        else:
+            LOG.error('Qtvcp Error with loading webView - is python-pyqt5.qtwebkit or python-pyqt5.qtwebengine installed?')
 # If log_file is none, logger.py will attempt to find the log file specified in
 # INI [DISPLAY] LOG_FILE, failing that it will log to $HOME/<base_log_name>.log
 
@@ -114,7 +127,7 @@ class QTVCP:
             # International translation
             locale.setlocale(locale.LC_ALL, '')
             locale.bindtextdomain(PATH.DOMAIN, PATH.LOCALEDIR)
-            gettext.install(PATH.DOMAIN, localedir=PATH.LOCALEDIR, unicode=True)
+            gettext.install(PATH.DOMAIN, localedir=PATH.LOCALEDIR)
             gettext.bindtextdomain(PATH.DOMAIN, PATH.LOCALEDIR)
 
             # if no handler file specified, use stock test one
@@ -191,6 +204,10 @@ Pressing cancel will close linuxcnc.""" % target)
         if opts.usermod:
             LOG.debug('Loading the handler file')
             window.load_extension(opts.usermod)
+            try:
+                window.web_view = QWebView()
+            except:
+                window.web_view = None
             # do any class patching now
             if "class_patch__" in dir(window.handler_instance):
                 window.handler_instance.class_patch__()
@@ -311,7 +328,7 @@ Pressing cancel will close linuxcnc.""" % target)
                 res = os.spawnvp(os.P_WAIT, "haltcl", ["haltcl", "-i",self.inipath, postgui_halfile])
             else:
                 res = os.spawnvp(os.P_WAIT, "halcmd", ["halcmd", "-i",self.inipath,"-f", postgui_halfile])
-            if res: raise SystemExit, res
+            if res: raise SystemExit(res)
 
     # This can be called normally or by control c
     # call optional handlerfile cleanup function
@@ -338,7 +355,7 @@ Pressing cancel will close linuxcnc.""" % target)
                     + "information may be useful in troubleshooting:\n"
                     + 'LinuxCNC Version  : %s\n'% INFO.LINUXCNC_VERSION)
         if ERROR_COUNT > 5:
-            LOG.critical("Too many errors: {}".format(message))
+            LOG.critical("Too Manu Errors \n {}\n{}\n".format(message,''.join(lines)))
             self.shutdown()
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -346,10 +363,10 @@ Pressing cancel will close linuxcnc.""" % target)
         msg.setInformativeText("QTvcp ERROR! Message # %d"%ERROR_COUNT)
         msg.setWindowTitle("Error")
         msg.setDetailedText(''.join(lines))
-        msg.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        msg.setStandardButtons(QtWidgets.QMessageBox.Retry | QtWidgets.QMessageBox.Abort)
         msg.show()
         retval = msg.exec_()
-        if retval == 4194304: #cancel button
+        if retval == QtWidgets.QMessageBox.Abort: #cancel button
             LOG.critical("Canceled from Error Dialog\n {}\n{}\n".format(message,''.join(lines)))
             self.shutdown()
 

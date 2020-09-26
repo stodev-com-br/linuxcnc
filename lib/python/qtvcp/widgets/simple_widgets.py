@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # qtVcp simple widgets
 #
 # Copyright (c) 2017  Chris Morley <chrisinnanaimo@hotmail.com>
@@ -231,8 +231,8 @@ class Indicated_PushButton(QtWidgets.QPushButton, _HalWidgetBase):
         elif self._ind_status:
             self._init_state_change()
         self._globalParameter = {'__builtins__' : None, 'INSTANCE':self.QTVCP_INSTANCE_,
-                                 'PROGRAM_LOADER':AUX_PRGM, 'ACTION':ACTION}
-        self._localsParameter = {'dir': dir}
+                                 'PROGRAM_LOADER':AUX_PRGM, 'ACTION':ACTION, 'HAL':hal}
+        self._localsParameter = {'dir': dir, 'True':True, 'False':False}
 
     def _init_state_change(self):
         def only_false(data):
