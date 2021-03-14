@@ -20,7 +20,7 @@ import os
 from PyQt5 import QtWidgets, QtCore, QtGui
 
 from qtvcp.widgets.widget_baseclass import _HalWidgetBase
-from qtvcp.widgets.entry_widget import TouchInputWidget
+from qtvcp.widgets.entry_widget import TouchInterface
 from qtvcp.core import Status, Action, Info
 from qtvcp import logger
 
@@ -110,7 +110,7 @@ class CustomSVG(QtSvg.QSvgWidget):
 # Macro tab widget
 #
 # macro tab widget parses the subroutine path for /lathe
-# It then opens the .ngc files ther eand searches for keynames
+# It then opens the .ngc files there and searches for keynames
 # using these key names it puts together a tab widget with svg file pics
 # the svg file should be in the same folder
 ###############################################################################
@@ -176,7 +176,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
     # first find macros
     # then build a menu page
     # then build the stack
-    # anything goes wrong display an eror page
+    # anything goes wrong display an error page
     def buildStack(self):
         macroFlag = False
         for path in INFO.SUB_PATH_LIST:
@@ -196,8 +196,10 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
                 # of these arrays
                 for i, tName in enumerate(tabName):
                     # make a widget that is added to the stack
-                    w = TouchInputWidget()
-                    w.touch_interface.callDialog = self.getNumbers
+                    w = TouchInterface(self)
+                    w.keyboard_enable = True
+                    # redirect Touchinterface call to our function
+                    w.callDialog = self.getNumbers
                     hbox = QtWidgets.QHBoxLayout(w)
                     #hbox.addStretch(1)
                     vbox = QtWidgets.QVBoxLayout()
@@ -226,7 +228,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
                         self['sw%d' % i] = CustomSVG(svgpath,  int(img_info[1]))
                     else:
                         try:
-                            print(self[tName][1][1])
+                            #print(self[tName][1][1])
                             imgpath = os.path.join(path, self[tName][1][1])
                         except:
                             imgpath = os.path.join(path, img_info[0])
@@ -257,7 +259,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
         vbox = QtWidgets.QVBoxLayout()
         grid = QtWidgets.QGridLayout()
         grid.setSpacing(10)
-        # we grid them in columns of (arbritrarily) 5
+        # we grid them in columns of (arbitrarily) 5
         # hopefully we don;t have too many macros...
         for i, tName in enumerate(tabNames):
             svg_name = self[tName][1][0]
@@ -457,7 +459,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
         self.getSaveFileName()
 
     def openReturn(self, path):
-        LOG.debug("Open return filename choosen: {}".format(path))
+        LOG.debug("Open return filename chosen: {}".format(path))
         file = QtCore.QFile(path)
         file.open(QtCore.QFile.ReadOnly)
         name = str(self.stack.currentWidget().objectName())
@@ -483,7 +485,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
     # save the current screen data to file picked by the user.
     # it's a plain text file
     def saveReturn(self, path):
-        LOG.debug("Save return filename choosen: {}".format(path))
+        LOG.debug("Save return filename chosen: {}".format(path))
         name = str(self.stack.currentWidget().objectName())
         if name == '': return
         file = QtCore.QFile(path)
@@ -503,7 +505,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
                     file.errorString())
 
     # we do this instead of directly so the dialog version's title changes
-    # when it's overriden
+    # when it's overridden
     def setTitle(self, string):
         self.setWindowTitle(string)
 
@@ -515,7 +517,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
         STATUS.emit('dialog-request', mess)
 
     # request the system to pop a load path picker dialog
-    # do this so the system is consistant and things like dialog
+    # do this so the system is consistent and things like dialog
     # placement are done.
     def getFileName(self):
         mess = {'NAME':self.load_dialog_code,'ID':'%s__' % self.objectName(),
@@ -526,7 +528,7 @@ class MacroTab(QtWidgets.QWidget, _HalWidgetBase):
         STATUS.emit('dialog-request', mess)
 
     # request the system to pop a save path picker dialog
-    # do this so the system is consistant and things like dialog
+    # do this so the system is consistent and things like dialog
     # placement are done.
     def getSaveFileName(self):
         mess = {'NAME':self.save_dialog_code,'ID':'%s__' % self.objectName(),

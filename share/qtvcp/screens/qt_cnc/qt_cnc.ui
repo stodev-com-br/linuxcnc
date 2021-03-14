@@ -1153,6 +1153,9 @@ p, li { white-space: pre-wrap; }
       <blue>255</blue>
      </color>
     </property>
+    <property name="keyboardDialog_option" stdset="0">
+     <bool>true</bool>
+    </property>
     <property name="versaProbeDialog_option" stdset="0">
      <bool>true</bool>
     </property>
@@ -1166,6 +1169,9 @@ p, li { white-space: pre-wrap; }
      <bool>true</bool>
     </property>
     <property name="originOffsetDialog_option" stdset="0">
+     <bool>true</bool>
+    </property>
+    <property name="calculatorDialog_option" stdset="0">
      <bool>true</bool>
     </property>
     <property name="machineLogDialog_option" stdset="0">
@@ -3486,7 +3492,7 @@ View</string>
       </rect>
      </property>
      <property name="text">
-      <string>False</string>
+      <string>Incremental</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
